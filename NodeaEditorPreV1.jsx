@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./NodeaEditor.css";
+import "./NodeaEditorPreV1Style.css";
 
 export default function NodeaEditor() {
   const [nodes, setNodes] = useState([]);
