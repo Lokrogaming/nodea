@@ -2,34 +2,50 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map Editor</title>
     <link rel="stylesheet" href="src/CSS/style.css">
 </head>
 <body>
-    <h1>Map Editor</h1>
+    <header>
+        <h1>Map Editor</h1>
+        <div id="meta-info">
+            <span id="map-author"></span>
+            <span id="map-description"></span>
+        </div>
+    </header>
 
-    <div id="meta-info">
-        <p><strong>Autor:</strong> <span id="meta-author">-</span></p>
-        <p><strong>Beschreibung:</strong> <span id="meta-description">-</span></p>
-    </div>
-
-    <div id="map-container"></div>
-
-    <div id="buttons">
-        <button id="upload-btn">Upload</button>
-        <input type="file" id="upload-input" accept=".json" style="display:none;">
-        <button id="download-btn">Download</button>
-    </div>
+    <main>
+        <div id="editor"></div>
+        <div class="controls">
+            <button id="downloadBtn">Download</button>
+            <input type="file" id="uploadInput" accept=".json">
+        </div>
+    </main>
 
     <!-- Download Popup -->
-    <div id="popup" class="hidden">
+    <div id="downloadPopup" class="popup hidden">
         <div class="popup-content">
             <h2>Download-Einstellungen</h2>
-            <label>Autor (optional): <input type="text" id="input-author"></label><br>
-            <label>Beschreibung (optional): <input type="text" id="input-description"></label><br>
-            <label>Passwort (optional): <input type="password" id="input-password"></label><br>
-            <button id="confirm-download">Speichern</button>
-            <button id="cancel-download">Abbrechen</button>
+            <label>Autor (optional): <input type="text" id="authorInput"></label>
+            <label>Beschreibung (optional): <textarea id="descInput"></textarea></label>
+            <label>Passwort (optional): <input type="password" id="passwordInput"></label>
+            <div class="popup-actions">
+                <button id="cancelDownload">Abbrechen</button>
+                <button id="confirmDownload">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Passwort Popup -->
+    <div id="passwordPopup" class="popup hidden">
+        <div class="popup-content">
+            <h2>Passwort erforderlich</h2>
+            <label>Passwort: <input type="password" id="passwordCheckInput"></label>
+            <div class="popup-actions">
+                <button id="cancelPassword">Abbrechen</button>
+                <button id="confirmPassword">OK</button>
+            </div>
         </div>
     </div>
 
