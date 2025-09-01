@@ -1,74 +1,111 @@
-const mapContainer = document.getElementById("map-container");
-const uploadBtn = document.getElementById("upload-btn");
-const uploadInput = document.getElementById("upload-input");
-const downloadBtn = document.getElementById("download-btn");
+const editor = document.getElementById('editor');
+const downloadBtn = document.getElementById('downloadBtn');
+const uploadInput = document.getElementById('uploadInput');
 
-const popup = document.getElementById("popup");
-const confirmDownload = document.getElementById("confirm-download");
-const cancelDownload = document.getElementById("cancel-download");
+const downloadPopup = document.getElementById('downloadPopup');
+const confirmDownload = document.getElementById('confirmDownload');
+const cancelDownload = document.getElementById('cancelDownload');
 
-const metaAuthor = document.getElementById("meta-author");
-const metaDescription = document.getElementById("meta-description");
+const passwordPopup = document.getElementById('passwordPopup');
+const confirmPassword = document.getElementById('confirmPassword');
+const cancelPassword = document.getElementById('cancelPassword');
+
+const mapAuthor = document.getElementById('map-author');
+const mapDescription = document.getElementById('map-description');
 
 let mapData = Array(10).fill().map(() => Array(10).fill(0));
-let metaData = { author: "-", description: "-", password: "" };
+let currentFilePassword = null;
 
-// Map generieren
-function generateMap() {
-    mapContainer.innerHTML = "";
-    for (let y = 0; y < 10; y++) {
-        for (let x = 0; x < 10; x++) {
-            const tile = document.createElement("div");
-            tile.classList.add("tile");
-            if (mapData[y][x] === 1) tile.classList.add("active");
-            tile.addEventListener("click", () => {
-                mapData[y][x] = mapData[y][x] === 1 ? 0 : 1;
-                tile.classList.toggle("active");
+// Editor erstellen
+function renderEditor() {
+    editor.innerHTML = '';
+    mapData.forEach((row, y) => {
+        row.forEach((cell, x) => {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            div.style.background = cell ? '#4caf50' : 'white';
+            div.addEventListener('click', () => {
+                mapData[y][x] = mapData[y][x] ? 0 : 1;
+                renderEditor();
             });
-            mapContainer.appendChild(tile);
-        }
-    }
+            editor.appendChild(div);
+        });
+    });
 }
+renderEditor();
 
-// Upload
-uploadBtn.addEventListener("click", () => uploadInput.click());
-uploadInput.addEventListener("change", () => {
-    const file = uploadInput.files[0];
+// Download starten
+downloadBtn.addEventListener('click', () => {
+    downloadPopup.classList.remove('hidden');
+});
+
+// Download bestätigen
+confirmDownload.addEventListener('click', () => {
+    const author = document.getElementById('authorInput').value;
+    const description = document.getElementById('descInput').value;
+    const password = document.getElementById('passwordInput').value;
+
+    const fileData = {
+        author,
+        description,
+        password,
+        map: mapData
+    };
+
+    const blob = new Blob([JSON.stringify(fileData)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "map.json";
+    a.click();
+    URL.revokeObjectURL(url);
+
+    downloadPopup.classList.add('hidden');
+});
+
+// Download abbrechen
+cancelDownload.addEventListener('click', () => {
+    downloadPopup.classList.add('hidden');
+});
+
+// Datei hochladen
+uploadInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = e => {
-        const loaded = JSON.parse(e.target.result);
-        mapData = loaded.map;
-        metaData = loaded.meta || { author: "-", description: "-", password: "" };
-        metaAuthor.textContent = metaData.author || "-";
-        metaDescription.textContent = metaData.description || "-";
-        generateMap();
+    reader.onload = () => {
+        const data = JSON.parse(reader.result);
+        if (data.password) {
+            currentFilePassword = data.password;
+            passwordPopup.classList.remove('hidden');
+            passwordPopup.dataset.mapData = reader.result;
+        } else {
+            loadMap(data);
+        }
     };
     reader.readAsText(file);
 });
 
-// Download
-downloadBtn.addEventListener("click", () => {
-    popup.classList.remove("hidden");
+// Passwort bestätigen
+confirmPassword.addEventListener('click', () => {
+    const inputPass = document.getElementById('passwordCheckInput').value;
+    const data = JSON.parse(passwordPopup.dataset.mapData);
+    if (inputPass === data.password) {
+        loadMap(data);
+        passwordPopup.classList.add('hidden');
+    } else {
+        alert("Falsches Passwort!");
+    }
 });
 
-confirmDownload.addEventListener("click", () => {
-    metaData.author = document.getElementById("input-author").value || "-";
-    metaData.description = document.getElementById("input-description").value || "-";
-    metaData.password = document.getElementById("input-password").value || "";
-
-    const blob = new Blob([JSON.stringify({ map: mapData, meta: metaData }, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "map.json";
-    a.click();
-    popup.classList.add("hidden");
+// Passwort abbrechen
+cancelPassword.addEventListener('click', () => {
+    passwordPopup.classList.add('hidden');
 });
 
-cancelDownload.addEventListener("click", () => {
-    popup.classList.add("hidden");
-});
-
-// Start
-generateMap();
-
+function loadMap(data) {
+    mapData = data.map;
+    mapAuthor.textContent = data.author ? `Autor: ${data.author}` : '';
+    mapDescription.textContent = data.description ? `Beschreibung: ${data.description}` : '';
+    renderEditor();
+}
