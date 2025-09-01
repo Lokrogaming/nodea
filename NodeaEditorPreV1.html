@@ -1,54 +1,73 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map Editor</title>
-    <link rel="stylesheet" href="/src/CSS/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Map Editor</title>
+  <link rel="stylesheet" href="/src/css/style.css" />
 </head>
 <body>
-    <header>
-        <h1>Map Editor</h1>
-        <div id="meta-info">
-            <span id="map-author"></span>
-            <span id="map-description"></span>
-        </div>
-    </header>
-
-    <main>
-        <div id="editor"></div>
-        <div class="controls">
-            <button id="downloadBtn">Download</button>
-            <input type="file" id="uploadInput" accept=".json">
-        </div>
-    </main>
-
-    <!-- Download Popup -->
-    <div id="downloadPopup" class="popup hidden">
-        <div class="popup-content">
-            <h2>Download-Einstellungen</h2>
-            <label>Autor (optional): <input type="text" id="authorInput"></label>
-            <label>Beschreibung (optional): <textarea id="descInput"></textarea></label>
-            <label>Passwort (optional): <input type="password" id="passwordInput"></label>
-            <div class="popup-actions">
-                <button id="cancelDownload">Abbrechen</button>
-                <button id="confirmDownload">Download</button>
-            </div>
-        </div>
+  <header class="topbar">
+    <h1>Map Editor</h1>
+    <div id="meta-info" class="meta">
+      <span id="meta-author">Autor: –</span>
+      <span id="meta-desc">Beschreibung: –</span>
     </div>
+  </header>
 
-    <!-- Passwort Popup -->
-    <div id="passwordPopup" class="popup hidden">
-        <div class="popup-content">
-            <h2>Passwort erforderlich</h2>
-            <label>Passwort: <input type="password" id="passwordCheckInput"></label>
-            <div class="popup-actions">
-                <button id="cancelPassword">Abbrechen</button>
-                <button id="confirmPassword">OK</button>
-            </div>
-        </div>
+  <main class="wrap">
+    <section class="controls">
+      <label>Breite:
+        <input type="number" id="colsInput" min="1" max="100" value="10" />
+      </label>
+      <label>Höhe:
+        <input type="number" id="rowsInput" min="1" max="100" value="10" />
+      </label>
+      <button id="newMapBtn">Neue Map</button>
+
+      <input type="file" id="uploadInput" accept=".json" hidden />
+      <button id="uploadBtn">Upload</button>
+
+      <button id="downloadBtn">Download</button>
+    </section>
+
+    <section id="map" class="map" aria-label="Map-Grid"></section>
+  </main>
+
+  <!-- Download-Popup -->
+  <div id="downloadPopup" class="popup hidden" role="dialog" aria-modal="true" aria-labelledby="dl-title">
+    <div class="popup-card">
+      <h2 id="dl-title">Download-Einstellungen</h2>
+      <label>Autor (optional)
+        <input type="text" id="authorInput" placeholder="z.B. LokroGaming" />
+      </label>
+      <label>Beschreibung (optional)
+        <textarea id="descInput" rows="3" placeholder="Kurze Beschreibung…"></textarea>
+      </label>
+      <label>Passwort (optional)
+        <input type="password" id="passwordInput" placeholder="••••••" />
+      </label>
+      <div class="actions">
+        <button id="cancelDownload">Abbrechen</button>
+        <button id="confirmDownload">Download</button>
+      </div>
     </div>
+  </div>
 
-    <script src="/src/JS/script.js"></script>
+  <!-- Passwort-Abfrage (nur wenn Datei eins hat) -->
+  <div id="passwordPopup" class="popup hidden" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+    <div class="popup-card">
+      <h2 id="pw-title">Passwort erforderlich</h2>
+      <label>Passwort
+        <input type="password" id="passwordCheckInput" placeholder="••••••" />
+      </label>
+      <div class="actions">
+        <button id="cancelPassword">Abbrechen</button>
+        <button id="confirmPassword">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/src/js/script.js" defer></script>
 </body>
 </html>
